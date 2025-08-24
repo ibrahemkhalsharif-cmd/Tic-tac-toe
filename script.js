@@ -53,7 +53,8 @@ function cellClicked() {
     checkWin();
     changePlayer();
     if (active && player !== current_player) {
-        aiMove();
+        setTimeout(function(){
+            aiMove();}, 1000)
     }
 }
 function updateCell(cell, index) {
