@@ -10,8 +10,11 @@ const win_condition = [
 
 ]
 
+const x_button = document.getElementById("X");
+const o_button = document.getElementById("O");
 
-let player = "X";
+let player = "";
+let current_player = "";
 let active = false;
 const params = new URLSearchParams(window.location.search);
 let difficulty_chosen = params.get("difficulty") || "easy";
@@ -21,47 +24,60 @@ const try_again = document.querySelector(".try-again");
 const round_won_checker = document.querySelector(".round-won");
 
 
-startgame();
 
-function startgame() {
+function startGame(chosen_player) {
+    player = chosen_player;
     active = true;
-    cells.forEach(cell => cell.addEventListener("click", cellclicked))
+    cells.forEach(cell => cell.addEventListener("click", cellClicked))
+    if(player == "O"){
+        player = "X";
+        aiMove();
+    }
 
 }
-function cellclicked() {
+x_button.addEventListener("click", () =>{
+    current_player = "X";
+    startGame("X");
+})
+o_button.addEventListener("click", () =>{
+    current_player = "O";
+    startGame("O");
+})
+
+function cellClicked() {
     const cellindex = this.getAttribute("id");
     if (options[cellindex] != "" || !active) {
         return;
     }
-    Updatecell(this, cellindex);
-    checkwin();
-    Changeplayer();
-    if (active && player == "O") {
+    updateCell(this, cellindex);
+    checkWin();
+    changePlayer();
+    if (active && player !== current_player) {
         aiMove();
     }
 }
-function Updatecell(cell, index) {
+function updateCell(cell, index) {
     options[index] = player;
     cell.textContent = player;
 
 }
-function Changeplayer() {
+function changePlayer() {
     player = (player == "X") ? "O" : "X";
 }
 function aiMove() {
     if (difficulty_chosen == "easy") {
-        easyai();
+        easyAi();
     }
     else if (difficulty_chosen == "medium") {
-        mediumai();
+        mediumAi();
     }
     else {
-        aihard();
+        aiHard();
     }
 
 
 }
-function easyai() {
+function easyAi() {
     const empty_options = []
     for (let i = 0; i < options.length; i++) {
         if (options[i] == "") {
@@ -71,26 +87,26 @@ function easyai() {
     }
     let index = Math.floor(Math.random() * empty_options.length);
     let move = empty_options[index];
-    Updatecell(cells[move], move);
-    checkwin();
-    Changeplayer();
+    updateCell(cells[move], move);
+    checkWin();
+    changePlayer();
 
 }
-function mediumai() {
+function mediumAi() {
     if (Math.random() < 0.5) {
-        easyai();
+        easyAi();
     }
     else {
-        aihard();
+        aiHard();
     }
 }
-function aihard() {
+function aiHard() {
     let bestmove = -1;
     let bestscore = -Infinity;     /*We choose infinity for this so we can be certain that the best possible choice is chosen.*/
     for (let i = 0; i < options.length; i++) {
         if (options[i] == "") {
             options[i] = "O";
-            let score = minmax(options, false);
+            let score = minMax(options, false);
             options[i] = "";
             if (score > bestscore) {
                 bestscore = score;
@@ -99,12 +115,13 @@ function aihard() {
         }
 
     }
-    Updatecell(cells[bestmove], bestmove);
-    checkwin();
-    Changeplayer();
+    updateCell(cells[bestmove], bestmove);
+    checkWin();
+    changePlayer();
 }
-function minmax(board, ismax) {
-    let score = Minimax_winner(board);
+
+function minMax(board, ismax) {
+    let score = miniMaxWinner(board);
     if (score !== undefined) {
         return score;
     }
@@ -113,7 +130,7 @@ function minmax(board, ismax) {
         for (let i = 0; i < board.length; i++) {
             if (board[i] == "") {
                 board[i] = "O";
-                let score = minmax(board, false);
+                let score = minMax(board, false);
                 board[i] = "";
                 bestscore = Math.max(score, bestscore);
             }
@@ -125,7 +142,7 @@ function minmax(board, ismax) {
         for (let i = 0; i < board.length; i++) {
             if (board[i] == "") {
                 board[i] = "X";
-                let score = minmax(board, true);
+                let score = minMax(board, true);
                 board[i] = "";
                 bestscore = Math.min(score, bestscore);
             }
@@ -133,7 +150,7 @@ function minmax(board, ismax) {
         return bestscore;
     }
 }
-function Minimax_winner(board) {
+function miniMaxWinner(board) {
     for (let i = 0; i < win_condition.length; i++) {
         const condition = win_condition[i];
         const cell_one = board[condition[0]];
@@ -154,7 +171,7 @@ function Minimax_winner(board) {
         return 0;
     }
 }
-function checkwin() {
+function checkWin() {
     let round_won = false;
     for (let i = 0; i < win_condition.length; i++) {
         const condition = win_condition[i];
@@ -179,15 +196,19 @@ function checkwin() {
 
     }
 }
-try_again.addEventListener("click", () => {
-    options = ["", "", "", "", "", "", "", "", ""];
+    try_again.addEventListener("click", () => {
+        player = "X";
+        options = ["", "", "", "", "", "", "", "", ""];
 
-    cells.forEach(cell => {
-        cell.textContent = "";
+        cells.forEach(cell => {
+            cell.textContent = "";
+
+        })
+        active = true;
+        round_won_checker.textContent = "";
+        if(player == "O"){
+            aiMove();
+        }
+
 
     })
-    active = true;
-    round_won_checker.textContent = "";
-
-
-})

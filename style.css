@@ -98,8 +98,31 @@ td{
 .choose:hover{
     cursor: pointer;
     background-color: blue;
-    transition:  0.3s ease, color 0.3s ease; ;
+    transition:  0.3s ease, color; 
 }
 .choose:active{
     background-color: red;
+}
+.small_tab{
+    height: 10vh;
+    display: flex;
+    gap: 2vw;
+}
+.small_tab a{
+
+    text-decoration: none;
+    color: black;
+    font-size: 2vw;
+    
+    
+
+}
+.small_tab a:hover{
+    color: blue;
+    transition: 0.3s ease, color;
+
+}
+.small_tab a:active{
+    color: red;
+
 }
