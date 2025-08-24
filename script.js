@@ -29,6 +29,10 @@ function cellclicked(){
             Updatecell(this , cellindex);
             checkwin();
             Changeplayer();
+            if(active && player == "O")
+            {
+                aiMove();
+            }
 }
 function Updatecell(cell , index){
     options[index] = player;
@@ -36,7 +40,79 @@ function Updatecell(cell , index){
 
 }
 function Changeplayer(){
-    player = (player == "X") ? "0" : "X";
+    player = (player == "X") ? "O" : "X";
+}
+function aiMove(){
+    let bestmove = -1;
+    let bestscore = -Infinity;     /*We choose infinity for this so we can be certain that the best possible choice is chosen.*/ 
+    for(let i = 0; i < options.length; i++){
+        if(options[i] == ""){
+            options[i] = "O";
+            let score = minmax(options , false);
+            options[i] = "";
+            if(score > bestscore){
+                bestscore = score;
+                bestmove = i;
+            }
+        }
+
+    }   
+    Updatecell(cells[bestmove] , bestmove);
+    checkwin();
+    Changeplayer();
+
+}
+function minmax(board, ismax){
+    let score = Minimax_winner(board);
+    if(score != null){
+        return score;
+    }
+    if(ismax){
+        let bestscore = -Infinity;
+        for(let i = 0; i < board.length;i++){
+            if(board[i] == ""){
+                board[i] = "O";
+                let score = minmax(board, false);
+                board[i] = "";
+                bestscore = Math.max(score , bestscore);
+            }
+        }
+        return bestscore;
+    }
+    else{
+        let bestscore = Infinity;
+        for(let i = 0; i < board.length; i++){
+            if(board[i] == ""){
+                board[i] = "X";
+                let score = minmax(board, true);
+                board[i] = "";
+                bestscore = Math.min(score, bestscore);
+            }
+        }
+        return bestscore;
+    }
+}
+function Minimax_winner(board){
+    for(let i = 0; i < win_condition.length; i++){
+        const condition = win_condition[i];
+        const cell_one = board[condition[0]];
+        const cell_two = board[condition[1]];
+        const cell_three = board[condition[2]];
+        if(cell_one == cell_two && cell_two == cell_three){
+            if(cell_one == "O"){
+                return 1;
+            }
+            if(cell_one == "X")
+            {
+                return -1;
+            }
+            
+        }
+
+    }
+    if(!board.includes("")){
+        return 0;
+    }
 }
 function checkwin(){
     let round_won = false;
