@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>difficulty</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+    <div class="difficulties">
+        <button class="easy">Easy</button>
+        <button class="medium">Medium</button>
+        <button class="hard">Hard</button>
+
+        <a href="index.html" class="start-game">Start game</a>
+
+    </div>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const start_game = document.querySelector(".start-game");
+        document.querySelector(".easy").addEventListener("click", ()=>{
+            params.set("difficulty" , "easy");
+            start_game.href = "index.html?" +  params.toString();
+        })
+         document.querySelector(".medium").addEventListener("click", ()=>{
+            params.set("difficulty" , "medium");
+            start_game.href = "index.html?" +  params.toString();
+        })
+         document.querySelector(".hard").addEventListener("click", ()=>{
+            params.set("difficulty" , "hard");
+            start_game.href = "index.html?" +  params.toString();
+        })
+       
+
+        
+        </script>
+
+</body>
+
+</html>
