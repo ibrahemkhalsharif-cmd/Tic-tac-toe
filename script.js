@@ -52,10 +52,15 @@ function cellClicked() {
     updateCell(this, cellindex);
     checkWin();
     changePlayer();
-    if (active && player !== current_player) {
+    if (active && player !== current_player) { 
+        active = false;
         setTimeout(function(){
-            aiMove();}, 1000)
+            aiMove();
+            active = true;
+        }, 1000)
+
     }
+   
 }
 function updateCell(cell, index) {
     options[index] = player;

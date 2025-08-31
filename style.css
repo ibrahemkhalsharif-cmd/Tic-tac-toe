@@ -126,3 +126,22 @@ td{
     color: red;
 
 }
+.difficulties button{
+    background-color: white;
+    padding: 2vw;
+    width: 20%;
+    font-size: 2vw;
+}
+.difficulties button:hover{
+    background-color: blue;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+}
+.difficulties button:active{
+    background-color: red;
+}
+.difficulties button.active{
+    background-color: red;
+    color: white;
+}

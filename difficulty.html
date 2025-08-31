@@ -12,12 +12,28 @@
      
 
     <div class="difficulties">
-            <a href="index.html?difficulty=easy" class="difficulty_link">Easy</a>
-            <a href="index.html?difficulty=medium" class="difficulty_link">Medium</a>
-            <a href="index.html?difficulty=hard" class="difficulty_link">Hard</a>
+            <button class="difficulties_buttons" data-dif ="easy" id="easy_button">Easy</button>
+            <button class="difficulties_buttons"  data-dif ="medium" id="medium_button">Medium</button>
+            <button class="difficulties_buttons" data-dif ="hard"  id="hard_button">Hard</button>
+            <a href="index.html" class="start_game">Start game</a>
 
     </div>
-    <scrip src="script.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const start_game = document.querySelector(".start_game");
+        const buttons = document.querySelectorAll(".difficulties_buttons");
+        buttons.forEach(button =>{
+            button.addEventListener("click", () =>{
+                buttons.forEach(btn => btn.classList.remove("active"));
+                button.classList.add("active");
+                params.set("difficulty", button.dataset.dif);
+                start_game.href = "index.html?" + params.toString();
+            })
+        })
+        
+        
+
+    </script>
 
 </body>
 
