@@ -16,30 +16,58 @@ const o_button = document.getElementById("O");
 let player = "";
 let current_player = "";
 let active = false;
-const params = new URLSearchParams(window.location.search);
-let difficulty_chosen = params.get("difficulty") || "easy";
+//const params = new URLSearchParams(window.location.search);
+
 let options = ["", "", "", "", "", "", "", "", ""];
 const cells = document.querySelectorAll(".cell");
 const try_again = document.querySelector(".try-again");
 const round_won_checker = document.querySelector(".round-won");
+let difficulty_chosen = "easy";
+const buttons = document.querySelectorAll(".small_difficulties_buttons");
+const player_options = document.querySelectorAll(".choose");
 
+buttons.forEach(button => {
 
+    button.addEventListener("click", () => {
+        buttons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        difficulty_chosen = button.dataset.dif;
+        const params = new URLSearchParams(window.location.search);
+        params.set("difficulty", difficulty_chosen);
+        window.history.replaceState({}, "", `${location.pathname}?${params}`);
+
+    })
+
+})
+
+player_options.forEach(option =>{
+    option.addEventListener("click" , () =>{
+        player_options.forEach(opt => opt.classList.remove("active"));
+        option.classList.add("active");
+    })
+})
 
 function startGame(chosen_player) {
-    player = chosen_player;
-    active = true;
-    cells.forEach(cell => cell.addEventListener("click", cellClicked))
-    if(player == "O"){
-        player = "X";
-        aiMove();
+    if (player == "") {
+        player = chosen_player;
+        active = true;
+        cells.forEach(cell => cell.addEventListener("click", cellClicked))
+        if (player == "O") {
+            player = "X";
+            aiMove();
+        }
+
     }
 
+
 }
-x_button.addEventListener("click", () =>{
+x_button.addEventListener("click", () => {
     current_player = "X";
+
     startGame("X");
 })
-o_button.addEventListener("click", () =>{
+o_button.addEventListener("click", () => {
     current_player = "O";
     startGame("O");
 })
@@ -52,15 +80,18 @@ function cellClicked() {
     updateCell(this, cellindex);
     checkWin();
     changePlayer();
-    if (active && player !== current_player) { 
+    if (active && player !== current_player) {
         active = false;
-        setTimeout(function(){
+        setTimeout(function () {
             aiMove();
-            active = true;
+            if (!checkWin()) {
+                active = true;
+            }
+
         }, 1000)
 
     }
-   
+
 }
 function updateCell(cell, index) {
     options[index] = player;
@@ -179,6 +210,7 @@ function miniMaxWinner(board) {
 }
 function checkWin() {
     let round_won = false;
+    let winner = "";
     for (let i = 0; i < win_condition.length; i++) {
         const condition = win_condition[i];
         const cell_one = options[condition[0]];
@@ -190,10 +222,12 @@ function checkWin() {
         if (cell_one == cell_two && cell_two == cell_three) {
             round_won = true;
             active = false;
+            winner = cell_one;
         }
     }
     if (round_won) {
-        round_won_checker.textContent = `${player} won the game`;
+
+        round_won_checker.textContent = `${winner} won the game`;
         return;
 
     }
@@ -202,19 +236,19 @@ function checkWin() {
 
     }
 }
-    try_again.addEventListener("click", () => {
-        player = "X";
-        options = ["", "", "", "", "", "", "", "", ""];
+try_again.addEventListener("click", () => {
+    player = "X";
+    options = ["", "", "", "", "", "", "", "", ""];
 
-        cells.forEach(cell => {
-            cell.textContent = "";
-
-        })
-        active = true;
-        round_won_checker.textContent = "";
-        if(player == "O"){
-            aiMove();
-        }
-
+    cells.forEach(cell => {
+        cell.textContent = "";
 
     })
+    active = true;
+    round_won_checker.textContent = "";
+    if (player == "O") {
+        aiMove();
+    }
+
+
+})

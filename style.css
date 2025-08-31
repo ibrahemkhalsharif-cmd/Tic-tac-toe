@@ -145,3 +145,24 @@ td{
     background-color: red;
     color: white;
 }
+.small_tab button{
+    width: 10%;
+    font-family: sans-serif;
+    font-size: 2vw;
+}
+.small_tab button:hover{
+    background-color: blue;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+}
+.small_tab button:active{
+    background-color: red;
+}
+.small_tab button.active{
+    background-color: red;
+    color: white;
+}
+.player_options .active{
+    background-color: red;
+}
