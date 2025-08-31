@@ -16,8 +16,8 @@ const o_button = document.getElementById("O");
 let player = "";
 let current_player = "";
 let active = false;
-//const params = new URLSearchParams(window.location.search);
-
+const params = new URLSearchParams(window.location.search);
+let difficulty_chosen_two = params.get("difficulty");
 let options = ["", "", "", "", "", "", "", "", ""];
 const cells = document.querySelectorAll(".cell");
 const try_again = document.querySelector(".try-again");
@@ -26,6 +26,11 @@ let difficulty_chosen = "easy";
 const buttons = document.querySelectorAll(".small_difficulties_buttons");
 const player_options = document.querySelectorAll(".choose");
 
+buttons.forEach(button =>{
+    if(difficulty_chosen_two == button.dataset.dif){
+        button.classList.add("active");
+    }
+})
 buttons.forEach(button => {
 
     button.addEventListener("click", () => {
@@ -64,11 +69,12 @@ function startGame(chosen_player) {
 }
 x_button.addEventListener("click", () => {
     current_player = "X";
-
+     o_button.disabled = true;
     startGame("X");
 })
 o_button.addEventListener("click", () => {
     current_player = "O";
+    x_button.disabled = true;
     startGame("O");
 })
 
@@ -208,6 +214,12 @@ function miniMaxWinner(board) {
         return 0;
     }
 }
+function disableClicks()
+{
+    cells.forEach(cell =>{
+        cell.removeEventListener("click" , cellClicked);
+    })
+}
 function checkWin() {
     let round_won = false;
     let winner = "";
@@ -221,19 +233,21 @@ function checkWin() {
         }
         if (cell_one == cell_two && cell_two == cell_three) {
             round_won = true;
-            active = false;
+            
             winner = cell_one;
+            active = false;
         }
     }
     if (round_won) {
+        
 
         round_won_checker.textContent = `${winner} won the game`;
-        return;
+        disableClicks();
 
     }
     else if (!options.includes("")) {
         round_won_checker.textContent = `DRAW!`;
-
+        disableClicks();
     }
 }
 try_again.addEventListener("click", () => {
@@ -242,6 +256,7 @@ try_again.addEventListener("click", () => {
 
     cells.forEach(cell => {
         cell.textContent = "";
+        cell.addEventListener("click" , cellClicked)
 
     })
     active = true;
@@ -249,6 +264,8 @@ try_again.addEventListener("click", () => {
     if (player == "O") {
         aiMove();
     }
+    x_button.disabled = false;
+    o_button.disabled = false;
 
 
 })
