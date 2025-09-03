@@ -28,6 +28,7 @@ let round_won = false;
 function startGame(chosen_player) {
     player = chosen_player;
     aiplayer = (player == "X") ? "O" : "X";
+    current_player = "X";
     active = true;
     cells.forEach(cell => cell.addEventListener("click", cellClicked))
     if (current_player == aiplayer) {
@@ -48,13 +49,15 @@ choice_buttons.forEach(button => {
     button.addEventListener("click", function () {
         choice_buttons.forEach(btn => btn.classList.remove("active"));
         this.classList.add("active");
-        current_player = this.getAttribute("data-dif");
-        if (current_player == "X" || current_player == "O") {
+        const chosen_player = this.getAttribute("data-dif");
+        if (chosen_player == "X" || chosen_player == "O") {
             choice_buttons.forEach(btn => btn.disabled = true);
         }
-        startGame(current_player);
+        startGame(chosen_player);
     })
 })
+console.log(player);
+console.log(aiplayer);
 //remove the colors from the buttons when disabling them
 small_tab.forEach(button => {
     button.addEventListener("click", function () {
@@ -77,9 +80,12 @@ function cellClicked() {
     if (options[cellindex] != "" || !active || round_won) {
         return;
     }
-    updateCell(this, cellindex);
-    checkWin();
-    changePlayer();
+    if (player == current_player) {
+        updateCell(this, cellindex);
+        checkWin();
+        changePlayer();
+    
+
     if (active && player !== current_player) {
         active = false;
         setTimeout(function () {
@@ -87,6 +93,7 @@ function cellClicked() {
             active = true;
         }, 1000)
     }
+   }
 }
 function updateCell(cell, index) {
     options[index] = current_player;
@@ -142,7 +149,7 @@ function aiHard() {
     let bestscore = -Infinity;     /*We choose infinity for this so we can be certain that the best possible choice is chosen.*/
     for (let i = 0; i < options.length; i++) {
         if (options[i] == "") {
-            options[i] = "O";
+            options[i] = aiplayer;
             let score = minMax(options, false);
             options[i] = "";
             if (score > bestscore) {
@@ -240,17 +247,18 @@ function checkWin() {
 try_again.addEventListener("click", () => {
 
     options = Array(9).fill("");
-    player = "X";
+    player = "";
+    aiplayer = "";
+
 
     cells.forEach(cell => {
         cell.textContent = "";
 
     })
-    active = true;
+
     round_won_checker.textContent = "";
-    if (player == "O") {
-        aiMove();
-    }
+    round_won = false;
+
     const url = new URL(window.location.href);
     url.searchParams.delete("difficulty");
     window.history.replaceState({}, '', url.pathname);
@@ -260,6 +268,7 @@ try_again.addEventListener("click", () => {
     choice_buttons.forEach(btn => btn.classList.remove("active"));
     small_tab.forEach(btn => btn.disabled = false);
     small_tab.forEach(btn => btn.classList.remove("active"));
+    active = false;
 
 
 })
