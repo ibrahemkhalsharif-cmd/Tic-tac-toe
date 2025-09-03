@@ -12,9 +12,9 @@
 
 
     <div class="difficulties">
-        <button class="easy">Easy</button>
-        <button class="medium">Medium</button>
-        <button class="hard">Hard</button>
+        <button class="difficutlites_buttons" id="easy" data-dif = "easy">Easy</button>
+        <button class="difficutlites_buttons" id="medium" data-dif = "easy">Medium</button>
+        <button class="difficutlites_buttons" id="hard" data-dif = "easy">Hard</button>
 
         <a href="index.html" class="start-game">Start game</a>
 
@@ -22,18 +22,17 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const start_game = document.querySelector(".start-game");
-        document.querySelector(".easy").addEventListener("click", ()=>{
-            params.set("difficulty" , "easy");
-            start_game.href = "index.html?" +  params.toString();
-        })
-         document.querySelector(".medium").addEventListener("click", ()=>{
-            params.set("difficulty" , "medium");
-            start_game.href = "index.html?" +  params.toString();
-        })
-         document.querySelector(".hard").addEventListener("click", ()=>{
-            params.set("difficulty" , "hard");
-            start_game.href = "index.html?" +  params.toString();
-        })
+        const buttons = document.querySelectorAll(".difficutlites_buttons");
+        buttons.forEach(button => {
+            button.addEventListener("click", () => {
+                buttons.forEach(btn => btn.classList.remove("active"));
+                button.classList.add("active");
+                params.set('difficulty', button.id);
+                start_game.href = `index.html?${params.toString()}`;
+            });
+        });
+
+      
        
 
         

@@ -10,8 +10,7 @@ const win_condition = [
 
 ]
 
-const x_button = document.getElementById("X");
-const o_button = document.getElementById("O");
+const choice_buttons = document.querySelectorAll(".choose");
 
 let player = "";
 let current_player = "";
@@ -22,9 +21,8 @@ let options = ["", "", "", "", "", "", "", "", ""];
 const cells = document.querySelectorAll(".cell");
 const try_again = document.querySelector(".try-again");
 const round_won_checker = document.querySelector(".round-won");
-
-
-
+const small_tab = document.querySelectorAll(".small_tab_buttons");
+let round_won = false;
 function startGame(chosen_player) {
     player = chosen_player;
     active = true;
@@ -35,18 +33,38 @@ function startGame(chosen_player) {
     }
 
 }
-x_button.addEventListener("click", () =>{
-    current_player = "X";
-    startGame("X");
+
+choice_buttons.forEach(button =>{
+    button.addEventListener("click", function(){
+        choice_buttons.forEach(btn => btn.classList.remove("active"));
+        this.classList.add("active");
+        current_player = this.getAttribute("data-dif");
+        if(current_player == "X" || current_player == "O"){
+            choice_buttons.forEach(btn => btn.disabled = true);
+        }
+        startGame(current_player);
+    })
 })
-o_button.addEventListener("click", () =>{
-    current_player = "O";
-    startGame("O");
+    
+small_tab.forEach(button =>{
+    button.addEventListener("click", function(){
+        small_tab.forEach(btn => btn.classList.remove("active"));
+        this.classList.add("active");
+        const url = new URLSearchParams(window.location.search);
+        url.set("difficulty", this.getAttribute("data-dif"));
+        difficulty_chosen = this.getAttribute("data-dif");
+        window.history.replaceState({}, '', `${window.location.pathname}?${url}`);
+        if(difficulty_chosen == "easy" || difficulty_chosen == "medium" || difficulty_chosen == "hard"){
+            small_tab.forEach(btn => btn.disabled = true);
+           }
+           console.log(difficulty_chosen);
+      
+    })
 })
 
 function cellClicked() {
     const cellindex = this.getAttribute("id");
-    if (options[cellindex] != "" || !active) {
+    if (options[cellindex] != "" || !active || round_won) {
         return;
     }
     updateCell(this, cellindex);
@@ -69,6 +87,7 @@ function changePlayer() {
     player = (player == "X") ? "O" : "X";
 }
 function aiMove() {
+   
     if (difficulty_chosen == "easy") {
         easyAi();
     }
@@ -176,7 +195,7 @@ function miniMaxWinner(board) {
     }
 }
 function checkWin() {
-    let round_won = false;
+    
     for (let i = 0; i < win_condition.length; i++) {
         const condition = win_condition[i];
         const cell_one = options[condition[0]];
@@ -213,6 +232,10 @@ function checkWin() {
         if(player == "O"){
             aiMove();
         }
+        choice_buttons.forEach(btn => btn.disabled = false);
+        choice_buttons.forEach(btn => btn.classList.remove("active"));
+        small_tab.forEach(btn => btn.disabled = false);
+        small_tab.forEach(btn => btn.classList.remove("active"));
 
 
     })

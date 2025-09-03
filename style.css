@@ -103,27 +103,35 @@ td{
 .choose:active{
     background-color: red;
 }
+.choose.active{
+    background-color: red;
+    color: white;
+}
 .small_tab{
     height: 10vh;
     display: flex;
     gap: 2vw;
 }
-.small_tab a{
+.small_tab button{
 
     text-decoration: none;
     color: black;
     font-size: 2vw;
+    width: 10%;
     
     
 
 }
-.small_tab a:hover{
-    color: blue;
+.small_tab button:hover{
+    background-color: blue;
     transition: 0.3s ease, color;
+    color: white;
+    cursor: pointer;
 
 }
-.small_tab a:active{
-    color: red;
+.small_tab button.active{
+    background-color: red;
+    color: white;
 
 }
 .difficulties button{
@@ -139,4 +147,7 @@ td{
 }
 .difficulties button:active{
     background-color: blue;
+}
+.difficulties .active{
+    background-color: red;
 }
