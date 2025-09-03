@@ -17,7 +17,7 @@ let current_player = "";
 let active = false;
 const params = new URLSearchParams(window.location.search);
 let difficulty_chosen = params.get("difficulty") || "easy";
-let options = ["", "", "", "", "", "", "", "", ""];
+let options = Array(9).fill("");
 const cells = document.querySelectorAll(".cell");
 const try_again = document.querySelector(".try-again");
 const round_won_checker = document.querySelector(".round-won");
@@ -53,7 +53,7 @@ choice_buttons.forEach(button =>{
         startGame(current_player);
     })
 })
-    
+    //remove the colors from the buttons when disabling them
 small_tab.forEach(button =>{
     button.addEventListener("click", function(){
         small_tab.forEach(btn => btn.classList.remove("active"));
@@ -126,8 +126,9 @@ function easyAi() {
     changePlayer();
 
 }
+// make the probability of hard to be more than easy.
 function mediumAi() {
-    if (Math.random() < 0.5) {
+    if (Math.random() < 0.2) {
         easyAi();
     }
     else {
@@ -230,9 +231,12 @@ function checkWin() {
 
     }
 }
+// when try again is clicked you should remove the params.
+
     try_again.addEventListener("click", () => {
+        
+        options = Array(9).fill("");
         player = "X";
-        options = ["", "", "", "", "", "", "", "", ""];
 
         cells.forEach(cell => {
             cell.textContent = "";
@@ -243,6 +247,11 @@ function checkWin() {
         if(player == "O"){
             aiMove();
         }
+        const url = new URL(window.location.href);
+        url.searchParams.delete("difficulty");
+        window.history.replaceState({}, '', url.pathname);
+        
+       
         choice_buttons.forEach(btn => btn.disabled = false);
         choice_buttons.forEach(btn => btn.classList.remove("active"));
         small_tab.forEach(btn => btn.disabled = false);
