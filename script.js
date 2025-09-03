@@ -33,6 +33,14 @@ function startGame(chosen_player) {
     }
 
 }
+console.log(difficulty_chosen);
+small_tab.forEach(button => {
+    if (button.dataset.dif == difficulty_chosen) {
+        button.classList.add("active");
+        
+    }
+    small_tab.forEach(btn => btn.disabled = true);
+})
 
 choice_buttons.forEach(button =>{
     button.addEventListener("click", function(){
@@ -87,6 +95,9 @@ function changePlayer() {
     player = (player == "X") ? "O" : "X";
 }
 function aiMove() {
+    if( round_won){
+        return;
+    }   
    
     if (difficulty_chosen == "easy") {
         easyAi();
