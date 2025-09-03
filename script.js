@@ -16,8 +16,12 @@ let player = "";
 let aiplayer = "";
 let current_player = "";
 let active = false;
+const urlParams = new URLSearchParams(window.location.search);
+
+
 
 let difficulty_chosen = "";
+difficulty_chosen = urlParams.get('difficulty') || "";
 let options = Array(9).fill("");
 const cells = document.querySelectorAll(".cell");
 const try_again = document.querySelector(".try-again");
@@ -27,15 +31,13 @@ let round_won = false;
 
 console.log(difficulty_chosen);
 function startGame(chosen_player) {
-    if(difficulty_chosen == "easy" || difficulty_chosen == "medium" || difficulty_chosen == "hard"){
-        active = true;
-    }
+   
     
     player = chosen_player;
     aiplayer = (player == "X") ? "O" : "X";
     current_player = "X";
     cells.forEach(cell => cell.addEventListener("click", cellClicked))
-    if (current_player == aiplayer) {
+    if ( active &&current_player == aiplayer) {
         aiMove();
     }
 
@@ -44,12 +46,17 @@ function startGame(chosen_player) {
 small_tab.forEach(button => {
     if (button.dataset.dif == difficulty_chosen) {
         button.classList.add("active");
+        small_tab.forEach(btn => btn.disabled = true);
+        active = true;
 
     }
 })
 
 choice_buttons.forEach(button => {
     button.addEventListener("click", function () {
+        if(difficulty_chosen==""||difficulty_chosen==null){ 
+            return;
+        }
         choice_buttons.forEach(btn => btn.classList.remove("active"));
         this.classList.add("active");
         const chosen_player = this.getAttribute("data-dif");
@@ -258,6 +265,7 @@ try_again.addEventListener("click", () => {
     options = Array(9).fill("");
     player = "";
     aiplayer = "";
+    current_player = "";
     difficulty_chosen = "";
 
 
