@@ -13,6 +13,7 @@ const win_condition = [
 const choice_buttons = document.querySelectorAll(".choose");
 
 let player = "";
+let aiplayer = "";
 let current_player = "";
 let active = false;
 const params = new URLSearchParams(window.location.search);
@@ -23,12 +24,13 @@ const try_again = document.querySelector(".try-again");
 const round_won_checker = document.querySelector(".round-won");
 const small_tab = document.querySelectorAll(".small_tab_buttons");
 let round_won = false;
+
 function startGame(chosen_player) {
     player = chosen_player;
+    aiplayer = (player == "X") ? "O" : "X";
     active = true;
     cells.forEach(cell => cell.addEventListener("click", cellClicked))
-    if(player == "O"){
-        player = "X";
+    if (current_player == aiplayer) {
         aiMove();
     }
 
@@ -37,36 +39,36 @@ console.log(difficulty_chosen);
 small_tab.forEach(button => {
     if (button.dataset.dif == difficulty_chosen) {
         button.classList.add("active");
-        
+
     }
     small_tab.forEach(btn => btn.disabled = true);
 })
 
-choice_buttons.forEach(button =>{
-    button.addEventListener("click", function(){
+choice_buttons.forEach(button => {
+    button.addEventListener("click", function () {
         choice_buttons.forEach(btn => btn.classList.remove("active"));
         this.classList.add("active");
         current_player = this.getAttribute("data-dif");
-        if(current_player == "X" || current_player == "O"){
+        if (current_player == "X" || current_player == "O") {
             choice_buttons.forEach(btn => btn.disabled = true);
         }
         startGame(current_player);
     })
 })
-    //remove the colors from the buttons when disabling them
-small_tab.forEach(button =>{
-    button.addEventListener("click", function(){
+//remove the colors from the buttons when disabling them
+small_tab.forEach(button => {
+    button.addEventListener("click", function () {
         small_tab.forEach(btn => btn.classList.remove("active"));
         this.classList.add("active");
         const url = new URLSearchParams(window.location.search);
         url.set("difficulty", this.getAttribute("data-dif"));
         difficulty_chosen = this.getAttribute("data-dif");
         window.history.replaceState({}, '', `${window.location.pathname}?${url}`);
-        if(difficulty_chosen == "easy" || difficulty_chosen == "medium" || difficulty_chosen == "hard"){
+        if (difficulty_chosen == "easy" || difficulty_chosen == "medium" || difficulty_chosen == "hard") {
             small_tab.forEach(btn => btn.disabled = true);
-           }
-           console.log(difficulty_chosen);
-      
+        }
+        console.log(difficulty_chosen);
+
     })
 })
 
@@ -80,25 +82,25 @@ function cellClicked() {
     changePlayer();
     if (active && player !== current_player) {
         active = false;
-        setTimeout(function(){
+        setTimeout(function () {
             aiMove();
             active = true;
         }, 1000)
     }
 }
 function updateCell(cell, index) {
-    options[index] = player;
-    cell.textContent = player;
+    options[index] = current_player;
+    cell.textContent = current_player;
 
 }
 function changePlayer() {
-    player = (player == "X") ? "O" : "X";
+    current_player = (current_player == "X") ? "O" : "X";
 }
 function aiMove() {
-    if( round_won){
+    if (round_won) {
         return;
-    }   
-   
+    }
+
     if (difficulty_chosen == "easy") {
         easyAi();
     }
@@ -164,7 +166,7 @@ function minMax(board, ismax) {
         let bestscore = -Infinity;
         for (let i = 0; i < board.length; i++) {
             if (board[i] == "") {
-                board[i] = "O";
+                board[i] = aiplayer;
                 let score = minMax(board, false);
                 board[i] = "";
                 bestscore = Math.max(score, bestscore);
@@ -176,7 +178,7 @@ function minMax(board, ismax) {
         let bestscore = Infinity;
         for (let i = 0; i < board.length; i++) {
             if (board[i] == "") {
-                board[i] = "X";
+                board[i] = player;
                 let score = minMax(board, true);
                 board[i] = "";
                 bestscore = Math.min(score, bestscore);
@@ -185,6 +187,7 @@ function minMax(board, ismax) {
         return bestscore;
     }
 }
+// Check for the winner in the minimax function meaning only for the ai, not for the main game. so it can return a valid score to help the ai.
 function miniMaxWinner(board) {
     for (let i = 0; i < win_condition.length; i++) {
         const condition = win_condition[i];
@@ -192,10 +195,10 @@ function miniMaxWinner(board) {
         const cell_two = board[condition[1]];
         const cell_three = board[condition[2]];
         if (cell_one == cell_two && cell_two == cell_three) {
-            if (cell_one == "O") {
+            if (cell_one == aiplayer) {
                 return 1;
             }
-            if (cell_one == "X") {
+            if (cell_one == player) {
                 return -1;
             }
 
@@ -206,8 +209,9 @@ function miniMaxWinner(board) {
         return 0;
     }
 }
+//Check for the win on the main game itself accounting for every change.
 function checkWin() {
-    
+
     for (let i = 0; i < win_condition.length; i++) {
         const condition = win_condition[i];
         const cell_one = options[condition[0]];
@@ -222,7 +226,7 @@ function checkWin() {
         }
     }
     if (round_won) {
-        round_won_checker.textContent = `${player} won the game`;
+        round_won_checker.textContent = `${current_player} won the game`;
         return;
 
     }
@@ -233,29 +237,29 @@ function checkWin() {
 }
 // when try again is clicked you should remove the params.
 
-    try_again.addEventListener("click", () => {
-        
-        options = Array(9).fill("");
-        player = "X";
+try_again.addEventListener("click", () => {
 
-        cells.forEach(cell => {
-            cell.textContent = "";
+    options = Array(9).fill("");
+    player = "X";
 
-        })
-        active = true;
-        round_won_checker.textContent = "";
-        if(player == "O"){
-            aiMove();
-        }
-        const url = new URL(window.location.href);
-        url.searchParams.delete("difficulty");
-        window.history.replaceState({}, '', url.pathname);
-        
-       
-        choice_buttons.forEach(btn => btn.disabled = false);
-        choice_buttons.forEach(btn => btn.classList.remove("active"));
-        small_tab.forEach(btn => btn.disabled = false);
-        small_tab.forEach(btn => btn.classList.remove("active"));
-
+    cells.forEach(cell => {
+        cell.textContent = "";
 
     })
+    active = true;
+    round_won_checker.textContent = "";
+    if (player == "O") {
+        aiMove();
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete("difficulty");
+    window.history.replaceState({}, '', url.pathname);
+
+
+    choice_buttons.forEach(btn => btn.disabled = false);
+    choice_buttons.forEach(btn => btn.classList.remove("active"));
+    small_tab.forEach(btn => btn.disabled = false);
+    small_tab.forEach(btn => btn.classList.remove("active"));
+
+
+})
