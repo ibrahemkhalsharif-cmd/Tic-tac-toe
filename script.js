@@ -16,8 +16,8 @@ let player = "";
 let aiplayer = "";
 let current_player = "";
 let active = false;
-const params = new URLSearchParams(window.location.search);
-let difficulty_chosen = params.get("difficulty") || "easy";
+
+let difficulty_chosen = "";
 let options = Array(9).fill("");
 const cells = document.querySelectorAll(".cell");
 const try_again = document.querySelector(".try-again");
@@ -25,24 +25,27 @@ const round_won_checker = document.querySelector(".round-won");
 const small_tab = document.querySelectorAll(".small_tab_buttons");
 let round_won = false;
 
+console.log(difficulty_chosen);
 function startGame(chosen_player) {
+    if(difficulty_chosen == "easy" || difficulty_chosen == "medium" || difficulty_chosen == "hard"){
+        active = true;
+    }
+    
     player = chosen_player;
     aiplayer = (player == "X") ? "O" : "X";
     current_player = "X";
-    active = true;
     cells.forEach(cell => cell.addEventListener("click", cellClicked))
     if (current_player == aiplayer) {
         aiMove();
     }
 
 }
-console.log(difficulty_chosen);
+
 small_tab.forEach(button => {
     if (button.dataset.dif == difficulty_chosen) {
         button.classList.add("active");
 
     }
-    small_tab.forEach(btn => btn.disabled = true);
 })
 
 choice_buttons.forEach(button => {
@@ -56,9 +59,8 @@ choice_buttons.forEach(button => {
         startGame(chosen_player);
     })
 })
-console.log(player);
-console.log(aiplayer);
-//remove the colors from the buttons when disabling them
+
+
 small_tab.forEach(button => {
     button.addEventListener("click", function () {
         small_tab.forEach(btn => btn.classList.remove("active"));
@@ -67,10 +69,15 @@ small_tab.forEach(button => {
         url.set("difficulty", this.getAttribute("data-dif"));
         difficulty_chosen = this.getAttribute("data-dif");
         window.history.replaceState({}, '', `${window.location.pathname}?${url}`);
-        if (difficulty_chosen == "easy" || difficulty_chosen == "medium" || difficulty_chosen == "hard") {
+        if (difficulty_chosen == "" || difficulty_chosen == null) {
+            
+            small_tab.forEach(btn => btn.disabled = false);
+            
+        }
+        else {
             small_tab.forEach(btn => btn.disabled = true);
         }
-        console.log(difficulty_chosen);
+        active = true;
 
     })
 })
@@ -137,7 +144,8 @@ function easyAi() {
 }
 // make the probability of hard to be more than easy.
 function mediumAi() {
-    if (Math.random() < 0.2) {
+    let harder = Math.random(); 
+    if (harder < 0.2) {
         easyAi();
     }
     else {
@@ -245,10 +253,12 @@ function checkWin() {
 // when try again is clicked you should remove the params.
 
 try_again.addEventListener("click", () => {
+     active = false;
 
     options = Array(9).fill("");
     player = "";
     aiplayer = "";
+    difficulty_chosen = "";
 
 
     cells.forEach(cell => {
@@ -268,7 +278,7 @@ try_again.addEventListener("click", () => {
     choice_buttons.forEach(btn => btn.classList.remove("active"));
     small_tab.forEach(btn => btn.disabled = false);
     small_tab.forEach(btn => btn.classList.remove("active"));
-    active = false;
+  
 
 
 })
